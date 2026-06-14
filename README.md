@@ -1,4 +1,4 @@
-# PaperMind
+# PaperMind 医学科研文献管理
 
 > Obsidian × Claude Code · 丢论文进去，LLM 自动入库、交叉引用、追踪进度、发现空白。
 
