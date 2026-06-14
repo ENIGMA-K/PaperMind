@@ -1,27 +1,31 @@
 filters:
-  - file.inFolder("wiki/entities")
-  - file.hasTag("journal")
-
+  and:
+    - file.inFolder("wiki/entities")
+    - file.hasTag("journal")
 properties:
   file.name:
-    displayName: "期刊"
+    displayName: 期刊
   issn:
-    displayName: "ISSN"
+    displayName: ISSN
   citescore:
-    displayName: "CiteScore"
+    displayName: CiteScore
   h_index:
-    displayName: "h-index"
+    displayName: h-index
+  score:
+    displayName: 重要性
   metrics_updated:
-    displayName: "数据更新"
-
+    displayName: 数据更新
 views:
   - type: table
-    name: "全部期刊"
+    name: 全部期刊
     order:
-      - citescore DESC
+      - file.basename
+      - score
+    sort:
+      - property: citescore DESC
+        direction: ASC
   - type: table
-    name: "需更新（>90天）"
-    filters:
-      - 'metrics_updated < now() - "90 days"'
+    name: 需更新 (>90天)
     order:
       - metrics_updated ASC
+    sort: []

@@ -63,17 +63,25 @@ Semantic Scholar(API,优先) / Europe PMC(API) / PubMed(E-utilities)
 
 ## 核心工作流
 
-### W1：录入论文（Ingest） → `/ingest`
+### W1：录入论文（Ingest） → `/ingest [路径]`
 
+- **路径可选**：不传→用户选；传目录→批量；传文件→单篇
 0. **去重**：查 `[[wiki/synthesis/文献索引.base]]` 按 DOI/作者+年份/标题 → 已存在停止 → 不存在创建 `status:stub`，完改 `draft`/`mature`。
-1. **读取**：`raw/artical/` PDF（扫描版用 OCR）。图表单独读取。
+1. **读取**：`raw/artical/` PDF（直接读；扫描版/大文件用 OCR）。图表单独读取。
 2. **提取**：研究问题·方法·人群·关键发现·局限性·与 wiki 关系。
-   - 期刊影响力：OpenAlex → CiteScore + h-index。
+   - **期刊影响力**（元数据补全 SOP）：
+     1. 优先从 PDF 首页提取 DOI（`pdftotext -f 1 -l 1`），而非仅依赖 API 搜索。
+     2. DOI → Crossref API（`api.crossref.org/works/<DOI>`）获取 ISSN + 期刊名 + 出版商。
+     3. ISSN → OpenAlex（`sources?filter=issn:<ISSN>`）获取 h-index（`summary_stats.h_index`）。
+     4. WebSearch → CiteScore（Scopus 2024）。
+     5. 计算 score：`citescore × 0.6 + h_index × 0.4`。未知期刊 score = 0。
+     6. 禁止在 API 未返回时直接留空——必须回到 PDF 逐页查找 DOI 或期刊信息。
    - 方法学质量：自动评估设计/RCT/中心/样本/盲法 → `method_quality` frontmatter → 摘要 `> [!limitation]`。
    - 术语提取：中英对照术语 → `wiki/concepts/` + `tags:terminology` → `[[wiki/synthesis/术语表.base]]`。
 3. **摘要页**：一句话总结→结构化摘要→关键数据→新实体/概念→开放问题。设 `reading_status:ingested` `pdf_status`。
 4. **更新实体**（含作者）：已有→追加；无→OpenAlex 补全+建 stub（字段：`h_index` `last_known_org` `topics` `co_authors` `papers`）。合作网络自动形成。
 5. **更新概念** → 6. **更新 index** → 7. **log**：`## [日期] ingest-paper | 作者 年份 - 标题` → 8. **矛盾**：`> [!contradiction]`。
+   - **健康检查**：每累计新录入 10 篇（不含去重跳过），自动触发 `/lint`。计数方式：查 log.md 自上次 `lint` 以来的 `ingest-paper` 条目。
 
 **阅读进度**：说「已速览/已读/已分析」→ 更新 `reading_status`（skimmed/read/analyzed）。
 
@@ -134,6 +142,22 @@ Semantic Scholar(API,优先) / Europe PMC(API) / PubMed(E-utilities)
 2. 生成 `wiki/synthesis/Gap分析_<范围>_YYYY-MM-DD.md`（概览表→分维详述 `> [!gap]`→优先级★）
 3. 更新 index+log
 
+### W14：精读论文（Look Into） → `/look-into [标题|作者|路径]`
+
+**与 W1 互斥**——W1 批量浅层录入（`reading_status: ingested`），W14 单篇深度通读（`reading_status: read`→`analyzed`）。
+
+1. **全文通读**：必须读取 PDF 所有页面 + 全部图表 + 补充材料。禁止只读前几页。
+2. **深度拆解**：
+   - 研究设计审查（随机化/盲法/纳入排除/样本量计算）
+   - 方法学评估（技术原理/统计方法选择/亚组预设性/缺失数据处理）
+   - 结果解读（效应量+CI+p 三角解读，不只盯 p）
+   - 讨论评估（是否过度外推/遗漏局限性/临床转化可行性）
+3. **交叉引用**：遍历 wiki 同主题论文，逐篇对比 → `> [!key-finding]` `> [!contradiction]` `> [!gap]`
+4. **更新摘要页**：追加 `## 精读笔记`（研究设计·方法评估·关键数据表·交叉验证·临床转化·批判性思考·`> [!thesis-idea]`）
+5. **更新 frontmatter**：`reading_status` → `read`（或 `analyzed`），`updated` → 当前日期
+6. **更新实体/概念** → 7. **log**：`## [日期] look-into | 作者 年份 - 标题`
+   - 精读质量金标准：能回答——设计优劣·效应量临床意义·结论适用人群边界·wiki 中位置·引用它写哪个论点
+
 ## 术语表
 
 `[[wiki/synthesis/术语表.base]]` 查询 `wiki/concepts/` 中 `tags:terminology`（W1 自动提取）。术语 frontmatter：`chinese` `abbreviation` `domain` `extracted_from`
@@ -147,7 +171,7 @@ Semantic Scholar(API,优先) / Europe PMC(API) / PubMed(E-utilities)
 ## Index 与 Log
 
 - **index.md**：按 categories 组织的完整目录，wiki-link + 摘要，每次工作流后更新。
-- **log.md**：仅追加，`## [YYYY-MM-DD] 操作类型 | 描述`。类型：`ingest-paper` `ingest-data` `literature-review` `research-note` `thesis` `work-assist` `query` `lint` `blast` `pub-research` `export` `gap-analysis` `refac` `setup`。
+- **log.md**：仅追加，`## [YYYY-MM-DD] 操作类型 | 描述`。类型：`ingest-paper` `ingest-data` `literature-review` `research-note` `thesis` `work-assist` `query` `lint` `blast` `pub-research` `export` `gap-analysis` `look-into` `refac` `setup`。
 
 ## PDF OCR（扫描版论文）
 

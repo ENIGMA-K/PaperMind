@@ -43,9 +43,9 @@
 
 ### 重要性分数
 
-`score = normalize(citescore) × 0.6 + normalize(h_index) × 0.4`
+`score = citescore × 0.6 + h_index × 0.4`
 
-无数据文献赋予所有文献的中位数分数。
+无数据文献赋予所有已知期刊文献的中位数分数。
 
 ### 输出文件
 
