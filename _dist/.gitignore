@@ -1,0 +1,40 @@
+# Obsidian 个人配置（每人自有）
+.obsidian/
+
+# Claude 会话历史
+.claudian/
+
+# macOS
+.DS_Store
+
+# 用户内容（不纳入模板）
+raw/artical/*
+raw/data/*
+raw/assets/*
+!raw/artical/.gitkeep
+!raw/data/.gitkeep
+!raw/assets/.gitkeep
+
+# 用户知识库
+wiki/entities/*
+wiki/concepts/*
+wiki/summaries/*
+wiki/synthesis/*
+!wiki/entities/.gitkeep
+!wiki/concepts/.gitkeep
+!wiki/summaries/.gitkeep
+!wiki/concepts/llm-wiki.md
+!wiki/synthesis/文献索引.base
+!wiki/synthesis/期刊数据库.base
+!wiki/synthesis/术语表.base
+
+# 用户工作产出
+work/*
+!work/tables/.gitkeep
+!work/manuscripts/.gitkeep
+!work/code/.gitkeep
+!work/notes/.gitkeep
+!work/log/.gitkeep
+
+# 个人日志
+log.md

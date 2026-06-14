@@ -1,0 +1,48 @@
+filters:
+  - file.inFolder("wiki/summaries")
+
+properties:
+  reading_status:
+    displayName: "阅读进度"
+  authors:
+    displayName: "作者"
+  year:
+    displayName: "年份"
+  journal:
+    displayName: "期刊"
+  file.name:
+    displayName: "摘要页"
+  doi:
+    displayName: "DOI"
+  pdf_status:
+    displayName: "全文"
+  source_type:
+    displayName: "来源"
+  tags:
+    displayName: "标签"
+
+views:
+  - type: table
+    name: "全部文献"
+    order:
+      - year DESC
+      - file.name ASC
+  - type: table
+    name: "待录入"
+    filters:
+      - 'status = "stub"'
+    order:
+      - file.name ASC
+  - type: table
+    name: "待获取全文"
+    filters:
+      - 'pdf_status = "to-fetch"'
+      - 'reading_status != "unread"'
+    order:
+      - year DESC
+  - type: table
+    name: "预印本/会议"
+    filters:
+      - 'source_type != "journal"'
+    order:
+      - year DESC

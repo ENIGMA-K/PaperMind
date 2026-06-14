@@ -1,0 +1,27 @@
+filters:
+  - file.inFolder("wiki/concepts")
+  - file.hasTag("terminology")
+
+properties:
+  file.name:
+    displayName: "术语"
+  chinese:
+    displayName: "中文"
+  abbreviation:
+    displayName: "缩写"
+  domain:
+    displayName: "领域"
+  extracted_from:
+    displayName: "来源"
+
+views:
+  - type: table
+    name: "全部术语"
+    groupBy:
+      property: domain
+      direction: ASC
+  - type: table
+    name: "按来源追溯"
+    groupBy:
+      property: extracted_from
+      direction: DESC
