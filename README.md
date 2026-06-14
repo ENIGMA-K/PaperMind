@@ -2,6 +2,7 @@
 
 > Obsidian × Claude Code · 丢论文进去，LLM 自动入库、交叉引用、追踪进度、发现空白。
 
+[![Version](https://img.shields.io/badge/version-v1.0-333333)](https://github.com/ENIGMA-K/PaperMind/releases)
 [![License: GPL v3](https://img.shields.io/badge/license-GPL%20v3-blue)](https://www.gnu.org/licenses/gpl-3.0.en.html)
 [![Obsidian](https://img.shields.io/badge/Obsidian-%E2%9C%93-7C3AED)](https://obsidian.md/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-%E2%9C%93-d97706)](https://docs.anthropic.com/en/docs/claude-code/overview)
